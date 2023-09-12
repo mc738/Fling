@@ -6,7 +6,18 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Compile Include="Library.fs"/>
+        <Compile Include="Store\Sqlite\Persistence.fs" />
+        <Compile Include="Store\Sqlite\Impl.fs" />
+        <Folder Include="Email\" />
+        <Compile Include="Service\FlingService.fs" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="FDOM.Core" Version="0.3.0" />
+      <PackageReference Include="FDOM.Rendering.Html" Version="0.3.0" />
+      <PackageReference Include="Fluff.Core" Version="0.3.0" />
+      <PackageReference Include="Freql.Sqlite" Version="0.9.2" />
+      <PackageReference Include="fstoolbox" Version="0.6.0" />
     </ItemGroup>
 
 </Project>
