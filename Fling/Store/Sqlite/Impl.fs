@@ -11,7 +11,7 @@ open Freql.Sqlite
 open FsToolbox.Core
 open FsToolbox.Core.Results
 open FsToolbox.Extensions
-open Microsoft.Extensions.Logging
+// open Microsoft.Extensions.Logging
 
 module Internal =
 
@@ -39,98 +39,92 @@ module Internal =
         (ctx: SqliteContext)
         id
         subscriptionId
-        requestBlob
+        (requestBlob: MemoryStream)
         maxRetryAttempts
         transactionId
         templateVersionId
         dataBlobId
         =
-        let hash = requestBlob.Has Hashing.sha256HashStream requestBlob
-
         ({ Id = id
            SubscriptionId = subscriptionId
            QueuedOn = DateTime.UtcNow
            RequestBlob = BlobField.FromBytes requestBlob
-           Hash = hash
+           Hash = requestBlob.GetSHA256Hash()
            MaxRetryAttempts = maxRetryAttempts
            TransactionId = transactionId
            TemplateVersionId = templateVersionId
-           DataBlobId = dataBlobId }: Parameters.NewEmailRequest)
+           DataBlobId = dataBlobId }
+        : Parameters.NewEmailRequest)
         |> Operations.insertEmailRequest ctx
 
-    let addEmailSendAttempt (ctx: SqliteContext) id requestId wasSuccessful responseBlob =
-        let hash = Hashing.sha256HashStream responseBlob
-
+    let addEmailSendAttempt (ctx: SqliteContext) id requestId wasSuccessful (responseBlob: MemoryStream) =
         ({ Id = id
            RequestId = requestId
            AttemptedOn = DateTime.UtcNow
            WasSuccessful = wasSuccessful
            ResponseBlob = BlobField.FromBytes responseBlob
-           Hash = hash }: Parameters.NewEmailSendAttempt)
+           Hash = responseBlob.GetSHA256Hash() }
+        : Parameters.NewEmailSendAttempt)
         |> Operations.insertEmailSendAttempt ctx
 
     let addEmailOutQueueItem (ctx: SqliteContext) requestId =
         ({ RequestId = requestId }: Parameters.NewEmailOutQueueItem)
         |> Operations.insertEmailOutQueueItem ctx
 
-    let addEmailHtmlContent ctx requestId content =
-        let hash = Hashing.sha256HashStream content
-
+    let addEmailHtmlContent ctx requestId (content: MemoryStream) =
         ({ RequestId = requestId
            Content = BlobField.FromBytes content
-           Hash = hash }: Parameters.NewEmailHtmlContent)
+           Hash = content.GetSHA256Hash() }
+        : Parameters.NewEmailHtmlContent)
         |> Operations.insertEmailHtmlContent ctx
 
-    let addEmailPlainTextContent ctx requestId content =
-        let hash = Hashing.sha256HashStream content
-
+    let addEmailPlainTextContent ctx requestId (content: MemoryStream) =
         ({ RequestId = requestId
            Content = BlobField.FromBytes content
-           Hash = hash }: Parameters.NewEmailPlainTextContent)
+           Hash = content.GetSHA256Hash() }
+        : Parameters.NewEmailPlainTextContent)
         |> Operations.insertEmailPlainTextContent ctx
 
-    let addDataBlob ctx id subscriptionId rawBlob createdBy =
-        let hash = Hashing.hashStream (SHA256.Create()) rawBlob
-
+    let addDataBlob ctx id subscriptionId (rawBlob: MemoryStream) createdBy =
         ({ Id = id
            SubscriptionId = subscriptionId
            RawBlob = BlobField.FromBytes rawBlob
-           Hash = hash
+           Hash = rawBlob.GetSHA256Hash()
            CreatedOn = DateTime.UtcNow
-           CreatedBy = createdBy }: Parameters.NewDataBlob)
+           CreatedBy = createdBy }
+        : Parameters.NewDataBlob)
         |> Operations.insertDataBlob ctx
 
     let addEmailTemplate ctx id subscriptionId name =
         ({ Id = id
            SubscriptionId = subscriptionId
-           Name = name }: Parameters.NewEmailTemplate)
+           Name = name }
+        : Parameters.NewEmailTemplate)
         |> Operations.insertEmailTemplate ctx
 
-    let addEmailTemplateVersion ctx id templateId templateBlob createdBy =
+    let addEmailTemplateVersion ctx id templateId (templateBlob: MemoryStream) createdBy =
         let version =
             Operations.selectEmailTemplateVersionRecord ctx [ "WHERE template_id = @0;" ] [ templateId ]
             |> Option.map (fun t -> t.Version + 1)
             |> Option.defaultValue 1
-
-        let hash = Hashing.sha256HashStream templateBlob
-
+            
         ({ Id = id
            TemplateId = templateId
            Version = version
            TemplateBlob = BlobField.FromBytes templateBlob
-           Hash = hash
+           Hash = templateBlob.GetSHA256Hash()
            CreatedOn = DateTime.UtcNow
-           CreatedBy = createdBy }: Parameters.NewEmailTemplateVersion)
+           CreatedBy = createdBy }
+        : Parameters.NewEmailTemplateVersion)
         |> Operations.insertEmailTemplateVersion ctx
 
-    let addEmailAttachment ctx requestId attachmentBlob fileName contentType =
-        let hash = Hashing.sha256HashStream attachmentBlob
-
+    let addEmailAttachment ctx requestId (attachmentBlob: MemoryStream) fileName contentType =
         ({ RequestId = requestId
            AttachmentBlob = BlobField.FromBytes attachmentBlob
-           Hash = hash
+           Hash = attachmentBlob.GetSHA256Hash()
            FileName = fileName
-           ContentType = contentType }: Parameters.NewEmailAttachment)
+           ContentType = contentType }
+        : Parameters.NewEmailAttachment)
         |> Operations.insertEmailAttachment ctx
 
     let deleteEmailOutQueueItem (ctx: SqliteContext) (requestId: string) =
@@ -191,7 +185,7 @@ type CommsStoreContext(ctx: SqliteContext) =
 
     member _.Get() = ctx
 
-type CommsStore(storeCtx: CommsStoreContext, log: ILogger<CommsStore>) =
+type CommsStore(storeCtx: CommsStoreContext (*, log: ILogger<CommsStore>*) ) =
 
 
     let ctx = storeCtx.Get()
@@ -329,5 +323,6 @@ type CommsStore(storeCtx: CommsStoreContext, log: ILogger<CommsStore>) =
         with exn ->
             ({ Message = $"Connection test failed. Exception: {exn.Message}"
                DisplayMessage = "Connection test failed."
-               Exception = Some exn }: FailureResult)
+               Exception = Some exn }
+            : FailureResult)
             |> ActionResult.Failure
