@@ -12,6 +12,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_external", "_external", "{
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Armarium", "..\Armarium\Armarium\Armarium.fsproj", "{4496992F-B77A-4C16-B81A-0445DD1D94AD}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Fling.EmailProviders", "Fling.EmailProviders\Fling.EmailProviders.fsproj", "{923D48F2-0781-4738-99C1-446C85F9FA56}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -26,6 +28,10 @@ Global
 		{4496992F-B77A-4C16-B81A-0445DD1D94AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4496992F-B77A-4C16-B81A-0445DD1D94AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4496992F-B77A-4C16-B81A-0445DD1D94AD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{923D48F2-0781-4738-99C1-446C85F9FA56}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{923D48F2-0781-4738-99C1-446C85F9FA56}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{923D48F2-0781-4738-99C1-446C85F9FA56}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{923D48F2-0781-4738-99C1-446C85F9FA56}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{4496992F-B77A-4C16-B81A-0445DD1D94AD} = {8E527C07-CE4B-480D-9D9B-2C5229210799}
