@@ -176,19 +176,20 @@ type EmailRequestData =
 
 type EmailTemplateDetails = { VersionId: string; Template: string }
 
-type CommsStoreContext(ctx: SqliteContext) =
+// TODO needed?
+type FlingSqliteStoreContext(ctx: SqliteContext) =
 
     static member Create(path: string) =
         match File.Exists path with
-        | true -> SqliteContext.Open path |> CommsStoreContext
-        | false -> SqliteContext.Create path |> Internal.initialize |> CommsStoreContext
+        | true -> SqliteContext.Open path |> FlingSqliteStoreContext
+        | false -> SqliteContext.Create path |> Internal.initialize |> FlingSqliteStoreContext
 
     member _.Get() = ctx
 
-type CommsStore(storeCtx: CommsStoreContext (*, log: ILogger<CommsStore>*) ) =
+type FlingSqliteStore(ctx: SqliteContext (*storeCtx: FlingSqliteStoreContext*) (*, log: ILogger<CommsStore>*) ) =
 
-
-    let ctx = storeCtx.Get()
+    // TODO needed?
+    //let ctx = storeCtx.Get()
 
     member _.AddEmailRequest
         (
