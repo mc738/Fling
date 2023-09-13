@@ -6,6 +6,7 @@ open System.Security.Cryptography
 open System.Text
 open System.Text.Json
 open System.Text.Json.Serialization
+open Fling.Store.Common
 open Freql.Core.Common.Types
 open Freql.Sqlite
 open FsToolbox.Core
@@ -161,21 +162,6 @@ module Internal =
             [ "WHERE template_id = @0 ORDER BY version DESC LIMIT 1;" ]
             [ templateId ]
 
-[<CLIMutable>]
-type EmailRequestData =
-    { [<JsonPropertyName("fromName")>]
-      FromName: string
-      [<JsonPropertyName("fromAddress")>]
-      FromAddress: string
-      [<JsonPropertyName("toName")>]
-      ToName: string
-      [<JsonPropertyName("toAddress")>]
-      ToAddress: string
-      [<JsonPropertyName("subject")>]
-      Subject: string }
-
-type EmailTemplateDetails = { VersionId: string; Template: string }
-
 // TODO needed?
 type FlingSqliteStoreContext(ctx: SqliteContext) =
 
@@ -191,25 +177,27 @@ type FlingSqliteStore(ctx: SqliteContext (*storeCtx: FlingSqliteStoreContext*) (
     // TODO needed?
     //let ctx = storeCtx.Get()
 
-    member _.AddEmailRequest
-        (
-            id,
-            subscriptionId,
-            requestBlob,
-            maxRetryAttempts,
-            ?transactionId,
-            ?templateVersionId,
-            ?dataBlobId
-        ) =
-        Internal.addEmailRequest
-            ctx
-            id
-            subscriptionId
-            requestBlob
-            maxRetryAttempts
-            transactionId
-            templateVersionId
-            dataBlobId
+    interface IFlingStore with
+    
+        member _.AddEmailRequest
+            (
+                id,
+                subscriptionId,
+                requestBlob,
+                maxRetryAttempts,
+                ?transactionId,
+                ?templateVersionId,
+                ?dataBlobId
+            ) =
+            Internal.addEmailRequest
+                ctx
+                id
+                subscriptionId
+                requestBlob
+                maxRetryAttempts
+                transactionId
+                templateVersionId
+                dataBlobId
 
     member _.AddEmailRequest
         (

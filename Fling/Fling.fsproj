@@ -6,6 +6,8 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <Compile Include="Store\Common\Shared.fs" />
+        <Compile Include="Store\Common\IFlingStore.fs" />
         <Compile Include="Store\Sqlite\Persistence.fs" />
         <Compile Include="Store\Sqlite\Impl.fs" />
         <Folder Include="Email\" />
