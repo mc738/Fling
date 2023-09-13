@@ -25,3 +25,16 @@ type IFlingStore =
         templateVersionId: string option *
         dataBlobId: string option ->
             unit
+
+    abstract member AddEmailSendAttempt:
+        id: string * requestId: string * wasSuccessful: bool * responseBlob: MemoryStream -> unit
+
+    abstract member AddEmailSendAttempt: id: string * requestId: string * wasSuccessful: bool * response: string -> unit
+
+    abstract member AddEmailOutQueueItem: requestId: string -> unit
+
+    abstract member AddEmailHtmlContent: requestId: string * content: MemoryStream -> unit
+
+    abstract member AddEmailHtmlContentString: requestId: string * content: string -> unit
+
+    

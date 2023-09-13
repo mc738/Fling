@@ -199,38 +199,37 @@ type FlingSqliteStore(ctx: SqliteContext (*storeCtx: FlingSqliteStoreContext*) (
                 templateVersionId
                 dataBlobId
 
-    member _.AddEmailRequest
-        (
-            id,
-            subscriptionId,
-            requestData: EmailRequestData,
-            maxRetryAttempts,
-            ?transactionId,
-            ?templateVersionId,
-            ?dataBlobId
-        ) =
-        use ms =
-            new MemoryStream(JsonSerializer.Serialize requestData |> Encoding.UTF8.GetBytes)
+        member _.AddEmailRequest
+            (
+                id,
+                subscriptionId,
+                requestData: EmailRequestData,
+                maxRetryAttempts,
+                ?transactionId,
+                ?templateVersionId,
+                ?dataBlobId
+            ) =
+            use ms =
+                new MemoryStream(JsonSerializer.Serialize requestData |> Encoding.UTF8.GetBytes)
 
-        Internal.addEmailRequest ctx id subscriptionId ms maxRetryAttempts transactionId templateVersionId dataBlobId
+            Internal.addEmailRequest ctx id subscriptionId ms maxRetryAttempts transactionId templateVersionId dataBlobId
 
+        member _.AddEmailSendAttempt(id, requestId, wasSuccessful, responseBlob) =
+            Internal.addEmailSendAttempt ctx id requestId wasSuccessful responseBlob
 
-    member _.AddEmailSendAttempt(id, requestId, wasSuccessful, responseBlob) =
-        Internal.addEmailSendAttempt ctx id requestId wasSuccessful responseBlob
+        member _.AddEmailSendAttempt(id, requestId, wasSuccessful, response: string) =
+            use ms = new MemoryStream(response |> Encoding.UTF8.GetBytes)
+            Internal.addEmailSendAttempt ctx id requestId wasSuccessful ms
 
-    member _.AddEmailSendAttempt(id, requestId, wasSuccessful, response: string) =
-        use ms = new MemoryStream(response |> Encoding.UTF8.GetBytes)
-        Internal.addEmailSendAttempt ctx id requestId wasSuccessful ms
+        member _.AddEmailOutQueueItem(requestId) =
+            Internal.addEmailOutQueueItem ctx requestId
 
-    member _.AddEmailOutQueueItem(requestId) =
-        Internal.addEmailOutQueueItem ctx requestId
+        member _.AddEmailHtmlContent(requestId, content) =
+            Internal.addEmailHtmlContent ctx requestId content
 
-    member _.AddEmailHtmlContent(requestId, content) =
-        Internal.addEmailHtmlContent ctx requestId content
-
-    member cs.AddEmailHtmlContentString(requestId, content: string) =
-        use ms = new MemoryStream(content |> Encoding.UTF8.GetBytes)
-        cs.AddEmailHtmlContent(requestId, ms)
+        member cs.AddEmailHtmlContentString(requestId, content: string) =
+            use ms = new MemoryStream(content |> Encoding.UTF8.GetBytes)
+            (cs :> IFlingStore).AddEmailHtmlContent(requestId, ms)
 
     member _.AddEmailPlainTextContent(requestId, content) =
         Internal.addEmailPlainTextContent ctx requestId content
@@ -250,7 +249,6 @@ type FlingSqliteStore(ctx: SqliteContext (*storeCtx: FlingSqliteStoreContext*) (
     member cs.AddDataBlobString(id, subscriptionId, data: string, createdBy) =
         use ms = new MemoryStream(data |> Encoding.UTF8.GetBytes)
         cs.AddDataBlob(id, subscriptionId, ms, createdBy)
-
 
     member _.AddEmailTemplate(id, subscriptionId, name) =
         Internal.addEmailTemplate ctx id subscriptionId name
