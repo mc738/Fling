@@ -37,4 +37,6 @@ type IFlingStore =
 
     abstract member AddEmailHtmlContentString: requestId: string * content: string -> unit
 
-    
+    abstract member AddEmailPlainTextContent: requestId: string * content: MemoryStream -> unit
+
+    abstract member AddEmailPlainTextContentString: requestId: string * content: string -> unit
