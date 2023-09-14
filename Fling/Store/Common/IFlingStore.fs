@@ -46,7 +46,13 @@ type IFlingStore =
     abstract member AddJsonDataBlob: id: string * subscriptionId: string * data: 'T * createdBy: string -> unit
 
     abstract member AddDataBlobString: id: string * subscriptionId: string * data: string * createdBy: string -> unit
-    
+
     abstract member AddEmailTemplate: id: string * subscriptionId: string * name: string -> unit
+
+    abstract member AddEmailTemplateVersion:
+        id: string * templateId: string * templateBlob: MemoryStream * createdBy: string -> unit
+
+    abstract member AddEmailTemplateVersionString:
+        id: string * templateId: string * template: string * createdBy: string -> unit
     
     
