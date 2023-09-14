@@ -272,44 +272,44 @@ type FlingSqliteStore(ctx: SqliteContext (*storeCtx: FlingSqliteStoreContext*) (
         member _.DeleteEmailOutQueueItem(requestId) =
             Internal.deleteEmailOutQueueItem ctx requestId
 
-    member _.GetEmailRequest(requestId) = Internal.getEmailRequest ctx requestId
+        member _.GetEmailRequest(requestId) = Internal.getEmailRequest ctx requestId
 
-    member _.GetEmailSendAttempts(requestId) =
-        Internal.getEmailSendAttempts ctx requestId
+        member _.GetEmailSendAttempts(requestId) =
+            Internal.getEmailSendAttempts ctx requestId
 
-    member _.GetEmailHtmlContent(requestId) =
-        Internal.getEmailHtmlContent ctx requestId
-        |> Option.map (fun c -> c.Content.ToBytes() |> Encoding.UTF8.GetString)
+        member _.GetEmailHtmlContent(requestId) =
+            Internal.getEmailHtmlContent ctx requestId
+            |> Option.map (fun c -> c.Content.ToBytes() |> Encoding.UTF8.GetString)
 
-    member _.GetEmailPlainTextContent(requestId) =
-        Internal.getEmailPlainTextContent ctx requestId
-        |> Option.map (fun c -> c.Content.ToBytes() |> Encoding.UTF8.GetString)
+        member _.GetEmailPlainTextContent(requestId) =
+            Internal.getEmailPlainTextContent ctx requestId
+            |> Option.map (fun c -> c.Content.ToBytes() |> Encoding.UTF8.GetString)
 
-    member _.GetEmailOutQueueIds() =
-        Internal.getEmailOutQueue ctx |> List.map (fun oqi -> oqi.RequestId)
+        member _.GetEmailOutQueueIds() =
+            Internal.getEmailOutQueue ctx |> List.map (fun oqi -> oqi.RequestId)
 
-    member _.GetEmailTemplate(subscriptionId, name) =
-        Internal.getEmailTemplateByName ctx subscriptionId name
+        member _.GetEmailTemplate(subscriptionId, name) =
+            Internal.getEmailTemplateByName ctx subscriptionId name
 
-    member _.GetEmailTemplateLatestNonDraftVersion(subscriptionId, name) =
-        Internal.getEmailTemplateByName ctx subscriptionId name
-        |> Option.bind (fun t -> Internal.getEmailTemplateLatestNonDraftVersion ctx t.Id)
-        |> Option.map (fun tv -> tv.TemplateBlob.ToBytes() |> Encoding.UTF8.GetString)
+        member _.GetEmailTemplateLatestNonDraftVersion(subscriptionId, name) =
+            Internal.getEmailTemplateByName ctx subscriptionId name
+            |> Option.bind (fun t -> Internal.getEmailTemplateLatestNonDraftVersion ctx t.Id)
+            |> Option.map (fun tv -> tv.TemplateBlob.ToBytes() |> Encoding.UTF8.GetString)
 
-    member _.GetEmailTemplateDetails(subscriptionId, name) =
-        Internal.getEmailTemplateByName ctx subscriptionId name
-        |> Option.bind (fun t -> Internal.getEmailTemplateLatestNonDraftVersion ctx t.Id)
-        |> Option.map (fun tv ->
-            { VersionId = tv.Id
-              Template = tv.TemplateBlob.ToBytes() |> Encoding.UTF8.GetString })
+        member _.GetEmailTemplateDetails(subscriptionId, name) =
+            Internal.getEmailTemplateByName ctx subscriptionId name
+            |> Option.bind (fun t -> Internal.getEmailTemplateLatestNonDraftVersion ctx t.Id)
+            |> Option.map (fun tv ->
+                { VersionId = tv.Id
+                  Template = tv.TemplateBlob.ToBytes() |> Encoding.UTF8.GetString })
 
-    member _.TestConnection() =
-        try
-            ctx.TestConnection() |> ignore
-            ActionResult.Success()
-        with exn ->
-            ({ Message = $"Connection test failed. Exception: {exn.Message}"
-               DisplayMessage = "Connection test failed."
-               Exception = Some exn }
-            : FailureResult)
-            |> ActionResult.Failure
+        member _.TestConnection() =
+            try
+                ctx.TestConnection() |> ignore
+                ActionResult.Success()
+            with exn ->
+                ({ Message = $"Connection test failed. Exception: {exn.Message}"
+                   DisplayMessage = "Connection test failed."
+                   Exception = Some exn }
+                : FailureResult)
+                |> ActionResult.Failure
