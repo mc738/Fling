@@ -54,5 +54,9 @@ type IFlingStore =
 
     abstract member AddEmailTemplateVersionString:
         id: string * templateId: string * template: string * createdBy: string -> unit
-    
-    
+
+    abstract member AddEmailAttachment:
+        requestId: string * attachmentBlob: MemoryStream * fileName: string * contentType: string -> unit
+
+    abstract member AddEmailAttachment:
+        requestId: string * attachment: byte array * fileName: string * contentType: string -> unit
