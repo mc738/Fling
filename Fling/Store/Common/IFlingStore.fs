@@ -40,3 +40,7 @@ type IFlingStore =
     abstract member AddEmailPlainTextContent: requestId: string * content: MemoryStream -> unit
 
     abstract member AddEmailPlainTextContentString: requestId: string * content: string -> unit
+
+    abstract member AddDataBlob: id: string * subscriptionId: string * rawBlob: MemoryStream * createdBy: string -> unit
+
+    abstract member AddJsonDataBlob: id: string * subscriptionId: string * data: 'T * createdBy: string -> unit
