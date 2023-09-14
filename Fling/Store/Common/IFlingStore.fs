@@ -1,6 +1,7 @@
 ﻿namespace Fling.Store.Common
 
 open System.IO
+open FsToolbox.Core.Results
 
 
 type IFlingStore =
@@ -60,3 +61,23 @@ type IFlingStore =
 
     abstract member AddEmailAttachment:
         requestId: string * attachment: byte array * fileName: string * contentType: string -> unit
+
+    abstract member DeleteEmailOutQueueItem: requestId: string -> unit
+
+    abstract member GetEmailRequest: requestId: string -> EmailRequest option
+
+    abstract member GetEmailSendAttempts: requestId: string -> EmailSendAttempt list
+
+    abstract member GetEmailHtmlContent: requestId: string -> string option
+
+    abstract member GetEmailPlainTextContent: requestId: string -> string option
+
+    abstract member GetEmailOutQueueIds: unit -> string list
+
+    abstract member GetEmailTemplate: subscriptionId: string * name: string -> EmailTemplate option
+
+    abstract member GetEmailTemplateLatestNonDraftVersion: subscriptionId: string * name: string -> string option
+
+    abstract member GetEmailTemplateDetails: subscriptionId: string * name: string -> EmailTemplateDetails option
+
+    abstract member TestConnection: unit -> ActionResult<unit>
