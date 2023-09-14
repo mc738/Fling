@@ -231,46 +231,46 @@ type FlingSqliteStore(ctx: SqliteContext (*storeCtx: FlingSqliteStoreContext*) (
             use ms = new MemoryStream(content |> Encoding.UTF8.GetBytes)
             (cs :> IFlingStore).AddEmailHtmlContent(requestId, ms)
 
-    member _.AddEmailPlainTextContent(requestId, content) =
-        Internal.addEmailPlainTextContent ctx requestId content
+        member _.AddEmailPlainTextContent(requestId, content) =
+            Internal.addEmailPlainTextContent ctx requestId content
 
-    member cs.AddEmailPlainTextContentString(requestId, content: string) =
-        use ms = new MemoryStream(content |> Encoding.UTF8.GetBytes)
-        cs.AddEmailPlainTextContent(requestId, ms)
+        member cs.AddEmailPlainTextContentString(requestId, content: string) =
+            use ms = new MemoryStream(content |> Encoding.UTF8.GetBytes)
+            (cs :> IFlingStore).AddEmailPlainTextContent(requestId, ms)
 
-    member _.AddDataBlob(id, subscriptionId, rawBlob, createdBy) =
-        Internal.addDataBlob ctx id subscriptionId rawBlob createdBy
+        member _.AddDataBlob(id, subscriptionId, rawBlob, createdBy) =
+            Internal.addDataBlob ctx id subscriptionId rawBlob createdBy
 
-    member cs.AddJsonDataBlob<'T>(id, subscriptionId, data, createdBy) =
-        let content = JsonSerializer.Serialize<'T> data |> Encoding.UTF8.GetBytes
-        use ms = new MemoryStream(content)
-        cs.AddDataBlob(id, subscriptionId, ms, createdBy)
+        member cs.AddJsonDataBlob<'T>(id, subscriptionId, data, createdBy) =
+            let content = JsonSerializer.Serialize<'T> data |> Encoding.UTF8.GetBytes
+            use ms = new MemoryStream(content)
+            (cs: IFlingStore).AddDataBlob(id, subscriptionId, ms, createdBy)
 
-    member cs.AddDataBlobString(id, subscriptionId, data: string, createdBy) =
-        use ms = new MemoryStream(data |> Encoding.UTF8.GetBytes)
-        cs.AddDataBlob(id, subscriptionId, ms, createdBy)
+        member cs.AddDataBlobString(id, subscriptionId, data: string, createdBy) =
+            use ms = new MemoryStream(data |> Encoding.UTF8.GetBytes)
+            (cs :> IFlingStore).AddDataBlob(id, subscriptionId, ms, createdBy)
 
-    member _.AddEmailTemplate(id, subscriptionId, name) =
-        Internal.addEmailTemplate ctx id subscriptionId name
+        member _.AddEmailTemplate(id, subscriptionId, name) =
+            Internal.addEmailTemplate ctx id subscriptionId name
 
-    member _.AddEmailTemplateVersion(id, templateId, templateBlob, createdBy) =
-        Internal.addEmailTemplateVersion ctx id templateId templateBlob createdBy
+        member _.AddEmailTemplateVersion(id, templateId, templateBlob, createdBy) =
+            Internal.addEmailTemplateVersion ctx id templateId templateBlob createdBy
 
-    member _.AddEmailTemplateVersionString(id, templateId, template: string, createdBy) =
-        use ms = new MemoryStream(template |> Encoding.UTF8.GetBytes)
+        member _.AddEmailTemplateVersionString(id, templateId, template: string, createdBy) =
+            use ms = new MemoryStream(template |> Encoding.UTF8.GetBytes)
 
-        Internal.addEmailTemplateVersion ctx id templateId ms createdBy
+            Internal.addEmailTemplateVersion ctx id templateId ms createdBy
 
-    member _.AddEmailAttachment(requestId, attachmentBlob, fileName, contentType) =
-        Internal.addEmailAttachment ctx requestId attachmentBlob fileName contentType
+        member _.AddEmailAttachment(requestId, attachmentBlob, fileName, contentType) =
+            Internal.addEmailAttachment ctx requestId attachmentBlob fileName contentType
 
-    member _.AddEmailAttachment(requestId, attachment: byte array, fileName, contentType) =
-        use ms = new MemoryStream(attachment)
+        member _.AddEmailAttachment(requestId, attachment: byte array, fileName, contentType) =
+            use ms = new MemoryStream(attachment)
 
-        Internal.addEmailAttachment ctx requestId ms fileName contentType
+            Internal.addEmailAttachment ctx requestId ms fileName contentType
 
-    member _.DeleteEmailOutQueueItem(requestId) =
-        Internal.deleteEmailOutQueueItem ctx requestId
+        member _.DeleteEmailOutQueueItem(requestId) =
+            Internal.deleteEmailOutQueueItem ctx requestId
 
     member _.GetEmailRequest(requestId) = Internal.getEmailRequest ctx requestId
 
