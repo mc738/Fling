@@ -28,7 +28,7 @@ module Shared =
 
     type EmailSendAttempt =
         { Id: string
-          RequestId: int
+          RequestId: string
           AttemptedOn: DateTime
           WasSuccessful: bool
           ResponseBlob: byte array
