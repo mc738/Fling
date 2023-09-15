@@ -33,3 +33,15 @@ module Shared =
           WasSuccessful: bool
           ResponseBlob: byte array
           Hash: string }
+        
+    type EmailRequestDetails =
+        { Id: string
+          SubscriptionId: string
+          QueuedOn: DateTime
+          RequestData: byte array
+          Hash: string
+          MaxRetryAttempts: int
+          TransactionId: string option
+          TemplateVersionId: string option
+          DataBlobId: string option }
+    
