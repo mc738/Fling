@@ -284,6 +284,15 @@ type FlingSqliteStore(ctx: SqliteContext (*storeCtx: FlingSqliteStoreContext*) (
 
         member _.GetEmailSendAttempts(requestId) =
             Internal.getEmailSendAttempts ctx requestId
+            |> List.map (fun das ->
+                {
+                    Id = das.Id
+                    RequestId = das.RequestId
+                    AttemptedOn = das.AttemptedOn
+                    WasSuccessful = das.WasSuccessful
+                    ResponseBlob = das.ResponseBlob.ToBytes()
+                    Hash = das.Hash
+                })
 
         member _.GetEmailHtmlContent(requestId) =
             Internal.getEmailHtmlContent ctx requestId
