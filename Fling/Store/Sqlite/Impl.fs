@@ -108,7 +108,7 @@ module Internal =
             Operations.selectEmailTemplateVersionRecord ctx [ "WHERE template_id = @0;" ] [ templateId ]
             |> Option.map (fun t -> t.Version + 1)
             |> Option.defaultValue 1
-            
+
         ({ Id = id
            TemplateId = templateId
            Version = version
@@ -178,7 +178,7 @@ type FlingSqliteStore(ctx: SqliteContext (*storeCtx: FlingSqliteStoreContext*) (
     //let ctx = storeCtx.Get()
 
     interface IFlingStore with
-    
+
         member _.AddEmailRequest
             (
                 id,
@@ -212,7 +212,15 @@ type FlingSqliteStore(ctx: SqliteContext (*storeCtx: FlingSqliteStoreContext*) (
             use ms =
                 new MemoryStream(JsonSerializer.Serialize requestData |> Encoding.UTF8.GetBytes)
 
-            Internal.addEmailRequest ctx id subscriptionId ms maxRetryAttempts transactionId templateVersionId dataBlobId
+            Internal.addEmailRequest
+                ctx
+                id
+                subscriptionId
+                ms
+                maxRetryAttempts
+                transactionId
+                templateVersionId
+                dataBlobId
 
         member _.AddEmailSendAttempt(id, requestId, wasSuccessful, responseBlob) =
             Internal.addEmailSendAttempt ctx id requestId wasSuccessful responseBlob
@@ -290,6 +298,10 @@ type FlingSqliteStore(ctx: SqliteContext (*storeCtx: FlingSqliteStoreContext*) (
 
         member _.GetEmailTemplate(subscriptionId, name) =
             Internal.getEmailTemplateByName ctx subscriptionId name
+            |> Option.map (fun et ->
+                { Id = et.Id
+                  SubscriptionId = et.SubscriptionId
+                  Name = et.Name })
 
         member _.GetEmailTemplateLatestNonDraftVersion(subscriptionId, name) =
             Internal.getEmailTemplateByName ctx subscriptionId name
