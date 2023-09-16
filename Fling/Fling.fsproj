@@ -13,6 +13,7 @@
         <Compile Include="Emails\Common.fs" />
         <Compile Include="Emails\Formatting.fs" />
         <Compile Include="Service\FlingService.fs" />
+        <Compile Include="Service\Agent.fs" />
     </ItemGroup>
 
     <ItemGroup>
