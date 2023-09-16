@@ -22,4 +22,8 @@
       <PackageReference Include="fstoolbox" Version="0.6.0" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\..\Armarium\Armarium\Armarium.fsproj" />
+    </ItemGroup>
+
 </Project>
