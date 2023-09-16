@@ -10,7 +10,7 @@
         <Compile Include="Store\Common\IFlingStore.fs" />
         <Compile Include="Store\Sqlite\Persistence.fs" />
         <Compile Include="Store\Sqlite\Impl.fs" />
-        <Folder Include="Email\" />
+        <Compile Include="Emails\Common.fs" />
         <Compile Include="Service\FlingService.fs" />
     </ItemGroup>
 
