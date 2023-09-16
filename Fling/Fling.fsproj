@@ -11,6 +11,7 @@
         <Compile Include="Store\Sqlite\Persistence.fs" />
         <Compile Include="Store\Sqlite\Impl.fs" />
         <Compile Include="Emails\Common.fs" />
+        <Compile Include="Emails\Formatting.fs" />
         <Compile Include="Service\FlingService.fs" />
     </ItemGroup>
 
