@@ -64,7 +64,7 @@ type IFlingStore =
 
     abstract member DeleteEmailOutQueueItem: requestId: string -> unit
 
-    abstract member GetEmailRequest: requestId: string -> EmailRequest option
+    abstract member GetEmailRequest: requestId: string -> EmailRequestDetails option
 
     abstract member GetEmailSendAttempts: requestId: string -> EmailSendAttempt list
 
