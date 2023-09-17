@@ -63,9 +63,9 @@ module Agent =
         }
 
     let handleTemplatedEmail
-        (store: CommsStore)
+        (store: IFlingStore)
         (log: ILogger)
-        (service: EmailService)
+        (provider: IEmailProvider)
         (request: QueueTemplatedEmailRequest)
         =
         async {
@@ -120,16 +120,14 @@ module Agent =
                         email.Attachments
                         |> List.iter (fun ea -> store.AddEmailAttachment(requestId, ea.Attachment, ea.Filename, ea.Type))
 
-                        match service with
-                        | EmailService.SendGrid cfg ->
-                            match! SendGrid.sendSingleEmail cfg.Token email with
-                            | ActionResult.Success r ->
-                                store.AddEmailSendAttempt(createReference (), requestId, true, r)
-                                store.DeleteEmailOutQueueItem(requestId)
-                                return ActionResult.Success()
-                            | ActionResult.Failure f ->
-                                store.AddEmailSendAttempt(createReference (), requestId, false, f.Message)
-                                return ActionResult.Failure f
+                        match! provider.SendSingleEmail email with
+                        | ActionResult.Success r ->
+                            store.AddEmailSendAttempt(createReference (), requestId, true, r)
+                            store.DeleteEmailOutQueueItem(requestId)
+                            return ActionResult.Success()
+                        | ActionResult.Failure f ->
+                            store.AddEmailSendAttempt(createReference (), requestId, false, f.Message)
+                            return ActionResult.Failure f
                     })
                 |> Option.defaultWith (fun _ ->
                     async {
@@ -142,7 +140,7 @@ module Agent =
                     })
         }
 
-    let start (store: CommsStore) (log: ILogger) (emailService: EmailService) =
+    let start (store: IFlingStore) (log: ILogger) (provider: IEmailProvider) =
         MailboxProcessor<Request>.Start
             (fun inbox ->
                 let rec loop () =
@@ -153,7 +151,7 @@ module Agent =
                         try
                             match request with
                             | Some (Request.QueueEmail r) ->
-                                match! handleEmail store log emailService r with
+                                match! handleEmail store log provider r with
                                 | ActionResult.Success _ ->
                                     log.LogInformation(
                                         $"Email send to {r.Email.ToName} ({r.Email.ToAddress}). Subject: `{r.Email.Subject}`"
@@ -163,7 +161,7 @@ module Agent =
                                         $"Could not send email {r.Email.ToName} ({r.Email.ToAddress}). Subject: `{r.Email.Subject}`. Error: {f.Message}"
                                     )
                             | Some (Request.QueueTemplatedEmail r) ->
-                                match! handleTemplatedEmail store log emailService r with
+                                match! handleTemplatedEmail store log provider r with
                                 | ActionResult.Success _ ->
                                     log.LogInformation(
                                         $"Email send to {r.Email.ToName} ({r.Email.ToAddress}). Subject: `{r.Email.Subject}`"
@@ -183,6 +181,6 @@ module Agent =
                         return! loop ()
                     }
 
-                log.LogInformation("Comms service agent starting.")
+                log.LogInformation("Fling service agent starting.")
 
                 loop ())
