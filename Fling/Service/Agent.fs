@@ -28,7 +28,7 @@ module Agent =
 
     let createReference _ = Guid.NewGuid().ToString("n")
 
-    let handleEmail (store: IFlingStore) (log: ILogger) (service: EmailService) (request: QueueEmailRequest) =
+    let handleEmail (store: IFlingStore) (log: ILogger) (provider: IEmailProvider) (request: QueueEmailRequest) =
         async {
             return!
                 async {
@@ -51,16 +51,14 @@ module Agent =
                     request.Email.Attachments
                     |> List.iter (fun ea -> store.AddEmailAttachment(requestId, ea.Attachment, ea.Filename, ea.Type))
 
-                    match service with
-                    | EmailService.SendGrid cfg ->
-                        match! SendGrid.sendSingleEmail cfg.Token request.Email with
-                        | ActionResult.Success r ->
-                            store.AddEmailSendAttempt(createReference (), requestId, true, r)
-                            store.DeleteEmailOutQueueItem(requestId)
-                            return ActionResult.Success()
-                        | ActionResult.Failure f ->
-                            store.AddEmailSendAttempt(createReference (), requestId, false, f.Message)
-                            return ActionResult.Failure f
+                    match! provider.SendSingleEmail request.Email with
+                    | ActionResult.Success r ->
+                        store.AddEmailSendAttempt(createReference (), requestId, true, r)
+                        store.DeleteEmailOutQueueItem(requestId)
+                        return ActionResult.Success()
+                    | ActionResult.Failure f ->
+                        store.AddEmailSendAttempt(createReference (), requestId, false, f.Message)
+                        return ActionResult.Failure f
                 }
         }
 
