@@ -15,6 +15,7 @@
         <Compile Include="Emails\IEmailProvider.fs" />
         <Compile Include="Service\FlingService.fs" />
         <Compile Include="Service\Agent.fs" />
+        <Compile Include="Service\Impl.fs" />
     </ItemGroup>
 
     <ItemGroup>
