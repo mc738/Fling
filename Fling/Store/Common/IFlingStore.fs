@@ -11,9 +11,9 @@ type IFlingStore =
         subscriptionId: string *
         requestBlob: MemoryStream *
         maxRetryAttempts: int *
-        transactionId: string option *
-        templateVersionId: string option *
-        dataBlobId: string option ->
+        ?transactionId: string *
+        ?templateVersionId: string *
+        ?dataBlobId: string ->
             unit
 
 
@@ -22,9 +22,9 @@ type IFlingStore =
         subscriptionId: string *
         requestData: EmailRequestData *
         maxRetryAttempts: int *
-        transactionId: string option *
-        templateVersionId: string option *
-        dataBlobId: string option ->
+        ?transactionId: string *
+        ?templateVersionId: string *
+        ?dataBlobId: string ->
             unit
 
     abstract member AddEmailSendAttempt:
